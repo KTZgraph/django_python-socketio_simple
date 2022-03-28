@@ -1,7 +1,8 @@
 import './App.css';
+import TextEditor from './components/TextEditor'
 
 function App() {
-  return "Hello react";
+  return <TextEditor/>
 }
 
 export default App;

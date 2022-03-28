@@ -39,10 +39,6 @@ cd django_example
 python manage.py runserver
 ```
 
--------------------------------------- Django React integration --------------------------------------
-https://www.youtube.com/watch?v=F9o4GSkSo40
-
-
 -------------------------------------- REACT --------------------------------------
 
 https://www.youtube.com/watch?v=iRaelG7v0OU
