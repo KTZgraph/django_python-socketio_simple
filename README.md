@@ -42,3 +42,17 @@ python manage.py runserver
 -------------------------------------- REACT --------------------------------------
 
 https://www.youtube.com/watch?v=iRaelG7v0OU
+
+
+
+------------------------- CORS
+### Access to XMLHttpRequest at 'http://127.0.0.1:8000/socket.io/?EIO=4&transport=polling&t=N_IYx0M' from origin 'http://127.0.0.1:3000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+
+https://stackoverflow.com/questions/57579110/how-to-fix-access-control-allow-origin-error-in-a-python-socket-io-server
+
+// change this in wsgi.file
+
+sio = socketio.Server()
+Use
+
+sio = socketio.Server(cors_allowed_origins='*')

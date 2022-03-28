@@ -1,6 +1,7 @@
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import Quill from "quill";
 import "quill/dist/quill.snow.css";
+import { io } from "socket.io-client";
 
 const TOOLBAR_OPTIONS = [
   [{ header: [1, 2, 3, 4, 5, 6, false] }],
@@ -15,6 +16,29 @@ const TOOLBAR_OPTIONS = [
 ];
 
 export default function TextEditor() {
+  useEffect(() => {
+    // const socket = io("http://127.0.0.1:8000/app/", {
+    //   withCredentials: true,
+    //   extraHeaders: {
+    //     "my-custom-header": "abcd",
+    //   },
+    // });
+
+    // const socket = io("http://127.0.0.1:8000/app/");
+
+    const options = {
+        "force new connection": true,
+        "reconnectionAttempts": "Infinity", 
+        "timeout": 10001, 
+        // "transports": ["websocket"]
+            }
+    var socket = io('http://127.0.0.1:8000/app/', options);
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+
   const wrapperRef = useCallback((wrapper) => {
     if (wrapper == null) return;
 

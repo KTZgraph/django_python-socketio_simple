@@ -9,7 +9,11 @@ from django.http import HttpResponse
 import socketio
 
 basedir = os.path.dirname(os.path.realpath(__file__))
-sio = socketio.Server(async_mode=async_mode)
+
+# 
+# https://stackoverflow.com/questions/57579110/how-to-fix-access-control-allow-origin-error-in-a-python-socket-io-server
+sio = socketio.Server(async_mode=async_mode, cors_allowed_origins='*')
+# sio = socketio.Server(async_mode=async_mode)
 thread = None
 
 
@@ -17,12 +21,14 @@ def index(request):
     global thread
     if thread is None:
         thread = sio.start_background_task(background_thread)
+    print('index')
     return HttpResponse(open(os.path.join(basedir, 'static/index.html')))
 
 
 def background_thread():
     """Example of how to send server generated events to clients."""
     count = 0
+    print('background_thread')
     while True:
         sio.sleep(10)
         count += 1
@@ -32,16 +38,19 @@ def background_thread():
 
 @sio.event
 def my_event(sid, message):
+    print('my_event')
     sio.emit('my_response', {'data': message['data']}, room=sid)
 
 
 @sio.event
 def my_broadcast_event(sid, message):
+    print('my_broadcast_event')
     sio.emit('my_response', {'data': message['data']})
 
 
 @sio.event
 def join(sid, message):
+    print('join')
     sio.enter_room(sid, message['room'])
     sio.emit('my_response', {'data': 'Entered room: ' + message['room']},
              room=sid)
@@ -49,6 +58,7 @@ def join(sid, message):
 
 @sio.event
 def leave(sid, message):
+    print('leave')
     sio.leave_room(sid, message['room'])
     sio.emit('my_response', {'data': 'Left room: ' + message['room']},
              room=sid)
@@ -56,6 +66,7 @@ def leave(sid, message):
 
 @sio.event
 def close_room(sid, message):
+    print('close_room')
     sio.emit('my_response',
              {'data': 'Room ' + message['room'] + ' is closing.'},
              room=message['room'])
@@ -64,19 +75,23 @@ def close_room(sid, message):
 
 @sio.event
 def my_room_event(sid, message):
+    print('my_room_event')
     sio.emit('my_response', {'data': message['data']}, room=message['room'])
 
 
 @sio.event
 def disconnect_request(sid):
+    print('disconnect_request')
     sio.disconnect(sid)
 
 
 @sio.event
 def connect(sid, environ):
+    print('connect')
     sio.emit('my_response', {'data': 'Connected', 'count': 0}, room=sid)
 
 
 @sio.event
 def disconnect(sid):
+    print('disconnect')
     print('Client disconnected')
