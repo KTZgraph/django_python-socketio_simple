@@ -39,6 +39,7 @@ def background_thread():
 @sio.event
 def my_event(sid, message):
     print('my_event')
+    print('my_event message : ',message , '\n\n\n')
     sio.emit('my_response', {'data': message['data']}, room=sid)
 
 
