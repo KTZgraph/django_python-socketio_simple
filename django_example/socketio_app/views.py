@@ -43,6 +43,8 @@ def my_event(sid, message):
     sio.emit('my_response', {'data': message['data']}, room=sid)
 
 
+
+
 @sio.event
 def my_broadcast_event(sid, message):
     print('my_broadcast_event')
@@ -96,3 +98,41 @@ def connect(sid, environ):
 def disconnect(sid):
     print('disconnect')
     print('Client disconnected')
+
+
+
+
+###########################################################
+@sio.event
+def save_document(sid, message):
+    print('save_document')
+    print('save_document message : ',message , '********************************************************************\n')
+    sio.emit('my_response_save_document', {'data': message}, room=sid)
+
+
+@sio.event
+def load_document(sid, message):
+    print('load-document')
+    print('load-document message : ',message , '********************************************************************\n')
+    sio.emit('my_response_load-document', {'data': message}, room=sid)
+
+@sio.event 
+def get_document(sid, message):
+    print('get-document')
+    print('get-document message : ',message , '********************************************************************\n')
+    sio.emit('my_response_get-document', {'data': message}, room=sid)
+
+
+# socket.broadcast.to(documentId).emit("receive-changes", delta);
+@sio.event 
+def receive_changes(sid, message):
+    print('receive-changes')
+    print('receive-changes message : ',message , '********************************************************************\n')
+    sio.emit('my_response_receive-changes', {'data': message}, room=sid)
+
+
+@sio.event
+def send_changes(sid, message):
+    print('send-changes')
+    print('send-changes message : ',message , '********************************************************************\n')
+    sio.emit('my_response_send-changes', {'data': message}, room=sid)

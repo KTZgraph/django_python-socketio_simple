@@ -1,8 +1,10 @@
-import { useCallback, useEffect, useState } from "react";
 import Quill from "quill";
 import "quill/dist/quill.snow.css";
+import { useCallback, useEffect, useState } from "react";
 import { io } from "socket.io-client";
+import { useParams } from "react-router-dom";
 
+const SAVE_INTERVAL_MS = 2000;
 const TOOLBAR_OPTIONS = [
   [{ header: [1, 2, 3, 4, 5, 6, false] }],
   [{ font: [] }],
@@ -16,10 +18,12 @@ const TOOLBAR_OPTIONS = [
 ];
 
 export default function TextEditor() {
+  const { id: documentId } = useParams();
   const [socket, setSocket] = useState();
   const [quill, setQuill] = useState();
+
   useEffect(() => {
-    const s = io("http://127.0.0.1:8000/");
+    const s = io("http://localhost:8000");
     setSocket(s);
 
     return () => {
@@ -27,56 +31,86 @@ export default function TextEditor() {
     };
   }, []);
 
+  // zapisywanie dokuemntu w bazie - wywolanie po stronie klienta
+  useEffect(() => {
+    if (socket == null || quill == null) return;
+
+    // co kilka sekund zapisujemy dokuemnt
+    const interval = setInterval(() => {
+      socket.emit("save_document", quill.getContents());
+    }, SAVE_INTERVAL_MS);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [socket, quill]);
+
+  // żeby użytkownicy byli w tym sammy pokoju i mogli edytować ten sam dokuemnt
+  useEffect(() => {
+    if (socket == null || quill == null) return;
+
+    // nasłuchiwanie eventu
+    // once wyczysci event po zakończeniu nasłuchiwania
+    socket.once("load_document", (document) => {
+      quill.setContents(document);
+      quill.enable();
+    });
+
+    // przekazanie do servera id Dokumenut
+    socket.emit("get_document", documentId);
+  }, [socket, quill, documentId]);
+
   // odbieranie danych zmienionych w dokumencie
   useEffect(() => {
     // bez sprawdzania typów - dwa == bo na poczatku są undefined
     if (socket == null || quill == null) return;
 
-    console.log('odbieranie [1]')
+    // delta to tylko mały fragment dokumentu który się zmienił
+    const handler = (delta) => {
+      quill.updateContents(delta);
+    };
+    socket.on("receive_changes", handler);
+
+    return () => {
+      quill.off("receive_changes", handler);
+    };
+  }, [socket, quill]);
+
+  // wysyłanie danych z dokumentu
+  useEffect(() => {
+    // bez sprawdzania typów - dwa == bo na poczatku są undefined
+    if (socket == null || quill == null) return;
 
     // delta to tylko mały fragment dokumentu który się zmienił
     const handler = (delta, oldDelta, source) => {
-      console.log('HANDLER')
-      console.log("SOURCE:", source)
-      console.log("delta: ", delta)
-
-      if(source !=='user') return
-        socket.emit('my_event', {'data': "aaaaaaaaaaaaaa"})
-        socket.emit('my_broadcast_event', {'data': "aaaaaaaaaaaaaa"})
-        socket.emit('join', {'data': "aaaaaaaaaaaaaa"})
-        socket.emit('leave', {'data': "aaaaaaaaaaaaaa"})
-        socket.emit('my_room_event', {'data': "aaaaaaaaaaaaaa"})
-        socket.emit('close_room', {'data': "aaaaaaaaaaaaaa"})
-        socket.emit('disconnect_request', {'data': "aaaaaaaaaaaaaa"})
+      if (source !== "user") return;
+      socket.emit("send_changes", delta);
     };
 
-    socket.emit('my_event', {'data': 'fdsfsfddsf'})
-
-    quill.on('receive-changes', handler)
-    quill.on('my_event', handler)
-    console.log('odbieranie [2]')
+    // text-change nie ma na serwerze
+    quill.on("text-change", handler);
 
     return () => {
-      console.log('odbieranie [3]')
-
-      quill.off("receive-changes", handler);
-      quill.off("my_event", handler);
+      // text-change nie ma na serwerze
+      quill.off("text-change", handler);
     };
-  
-  
   }, [socket, quill]);
 
   const wrapperRef = useCallback((wrapper) => {
-    if (wrapper == null) return;
+    if (wrapper === null) return;
 
     wrapper.innerHTML = "";
     const editor = document.createElement("div");
     wrapper.append(editor);
+
     const q = new Quill(editor, {
       theme: "snow",
       modules: { toolbar: TOOLBAR_OPTIONS },
     });
+    q.disable();
+    q.setText("Loading...");
     setQuill(q);
   }, []);
+
   return <div className="container" ref={wrapperRef}></div>;
 }
