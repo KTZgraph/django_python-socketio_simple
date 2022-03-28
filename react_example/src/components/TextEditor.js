@@ -32,17 +32,38 @@ export default function TextEditor() {
     // bez sprawdzania typów - dwa == bo na poczatku są undefined
     if (socket == null || quill == null) return;
 
-    // delta to tylko mały fragment dokumentu który się zmienił
-    const handler = (delta) => {
-      quill.updateContents(delta);
-    };
-    socket.on("my_event", handler);
-    socket.emit("my_event", {'data': 'Trolololo'});
+    console.log('odbieranie [1]')
 
+    // delta to tylko mały fragment dokumentu który się zmienił
+    const handler = (delta, oldDelta, source) => {
+      console.log('HANDLER')
+      console.log("SOURCE:", source)
+      console.log("delta: ", delta)
+
+      if(source !=='user') return
+        socket.emit('my_event', {'data': "aaaaaaaaaaaaaa"})
+        socket.emit('my_broadcast_event', {'data': "aaaaaaaaaaaaaa"})
+        socket.emit('join', {'data': "aaaaaaaaaaaaaa"})
+        socket.emit('leave', {'data': "aaaaaaaaaaaaaa"})
+        socket.emit('my_room_event', {'data': "aaaaaaaaaaaaaa"})
+        socket.emit('close_room', {'data': "aaaaaaaaaaaaaa"})
+        socket.emit('disconnect_request', {'data': "aaaaaaaaaaaaaa"})
+    };
+
+    socket.emit('my_event', {'data': 'fdsfsfddsf'})
+
+    quill.on('receive-changes', handler)
+    quill.on('my_event', handler)
+    console.log('odbieranie [2]')
 
     return () => {
+      console.log('odbieranie [3]')
+
+      quill.off("receive-changes", handler);
       quill.off("my_event", handler);
     };
+  
+  
   }, [socket, quill]);
 
   const wrapperRef = useCallback((wrapper) => {
