@@ -13,6 +13,7 @@ pip install eventlet
 ### wsgi file django_example\django_example\wsgi.py
 https://stackoverflow.com/questions/48925318/raise-runtimeerroryou-need-to-use-the-eventlet-server
 
+### create
 ```
 
 virtualenv env
@@ -27,4 +28,11 @@ cd django_example
 python manage.py startapp socketio_app
 
 
+```
+
+
+### run
+```
+cd django_example 
+python manage.py runserver
 ```
