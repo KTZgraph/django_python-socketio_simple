@@ -10,7 +10,7 @@ https://stackoverflow.com/questions/69082602/the-websocket-transport-is-not-avai
 // pip install gevent-websocket # works without it
 pip install eventlet
 
-### wsgi plik
+### wsgi file django_example\django_example\wsgi.py
 https://stackoverflow.com/questions/48925318/raise-runtimeerroryou-need-to-use-the-eventlet-server
 
 ```
