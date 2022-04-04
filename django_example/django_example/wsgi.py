@@ -17,13 +17,16 @@ https://docs.djangoproject.com/en/4.0/howto/deployment/wsgi/
 
 
 # https://stackoverflow.com/questions/48925318/raise-runtimeerroryou-need-to-use-the-eventlet-server
+
+
+#https://github.com/miguelgrinberg/python-socketio/blob/main/docs/server.rst
 import os
 
 from django.core.wsgi import get_wsgi_application
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "django_example.settings")
 
-from socketio import Middleware
+from socketio import Middleware, WSGIApp
 from socketio_app.views import sio
 django_app = get_wsgi_application()
 application = Middleware(sio, django_app)

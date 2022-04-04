@@ -88,9 +88,11 @@ def disconnect_request(sid):
     sio.disconnect(sid)
 
 
+
+
 @sio.event
 def connect(sid, environ):
-    print('connect')
+    print('Połączono z serwerem')
     sio.emit('my_response', {'data': 'Connected', 'count': 0}, room=sid)
 
 
@@ -106,6 +108,8 @@ def disconnect(sid):
 @sio.event
 def save_document(sid, message):
     print('save_document')
+
+    
     print('save_document message : ',message , '********************************************************************\n')
     sio.emit('my_response_save_document', {'data': message}, room=sid)
 
