@@ -136,7 +136,13 @@ def receive_changes(sid, message):
 
 
 @sio.event
-def send_changes(sid, message):
-    print('send-changes')
-    print('send-changes message : ',message , '********************************************************************\n')
-    sio.emit('my_response_send-changes', {'data': message}, room=sid)
+def send_changes(sid, delta):
+    print('*'*79)
+    print('send_changes')
+    print(delta)
+    print('*'*79)
+    print('\n\n\n\n')
+    # sio.emit('send_changes.emit', {'data': message}, room=sid)
+    # sid nie jest potrzebny to właściwie broadcast
+    # sio.emit('send_changes.emit', {'data': message})
+    sio.emit('receive-changes', delta) #dla JS zdarzenie
