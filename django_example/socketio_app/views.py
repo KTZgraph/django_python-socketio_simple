@@ -17,6 +17,9 @@ sio = socketio.Server(async_mode=async_mode, cors_allowed_origins='*')
 thread = None
 
 
+# baza danych
+from .db_helper import get_or_create_note, update_note
+
 def index(request):
     global thread
     if thread is None:
@@ -114,15 +117,12 @@ def save_document(sid, message):
 @sio.event 
 def get_document(sid, document_id):
     # wejsc do pooju
-    # @sio.event
-    # def join(sid, message):
-    #     print('join')
-    #     sio.enter_room(sid, message['room'])
-    #     sio.emit('my_response', {'data': 'Entered room: ' + message['room']},
-    #             room=sid)
-
-    print('join: ', document_id, '\n\n\n\n')
+    # print('join: ', document_id, '\n\n\n\n')
     sio.enter_room(sid, document_id)
+
+    # pobrać albo utowrzyć dokument
+    document_obj = get_or_create_note(document_id)
+    print(document_obj)
 
 
     # wysąłnei do pokoju
@@ -131,7 +131,7 @@ def get_document(sid, document_id):
     #     print('my_room_event')
     #     sio.emit('my_response', {'data': message['data']}, room=message['room'])
 
-    sio.emit('load_document', data=f'Dane pliku z serwera, {sid}, {document_id}', room=str(document_id))
+    sio.emit('load_document', data=document_obj, room=str(document_id))
 
 
 

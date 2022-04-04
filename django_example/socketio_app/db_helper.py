@@ -30,7 +30,7 @@ def find_note_by_id(note_id:str)->pymongo.cursor.Cursor:
         return
 
     collection = get_notes_collection()
-    result = collection.find({"_id": note_id})
+    result = collection.find({"_id": ObjectId(note_id)})
     print(result)
         
     return result
@@ -54,10 +54,17 @@ def save_note(note:dict)->pymongo.results.InsertOneResult:
         print(f'Note with id:{note["_id"]} already exists')
 
 def get_or_create_note(note_id):
-    if note_id in None:
+    if note_id is None:
         return
+    result = find_note_by_id(note_id)
     
-    # note = 
+    # jak jest w bazie to zwróć
+    if result:
+        return result
+    
+    # utwórz nowy z pustym tekstem
+    result = save_note({'_id': note_id, 'data':''})
+    return result
 
 if __name__ == '__main__':
     get_db_connector()
