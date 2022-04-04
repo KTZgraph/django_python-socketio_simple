@@ -109,10 +109,11 @@ def disconnect(sid):
 
 ###########################################################
 @sio.event
-def save_document(sid, message):
-    print('save_document')
-    print('save_document message : ',message , '********************************************************************\n')
-    sio.emit('my_response_save_document', {'data': message}, room=sid)
+def save_document(sid, data):
+    update_note(data)
+    print('update_note: ', data)
+    print('\n\n\n\n\n\n\n\n')
+    sio.emit('my_response_save_document', {'data': data['data']}, room=sid)
 
 @sio.event 
 def get_document(sid, document_id):
@@ -126,5 +127,9 @@ def get_document(sid, document_id):
 
 @sio.event
 def send_changes(sid, data):
+    print('send_changes')
+    print(data)
+    
+    update_note(data['documentId'], data['delta'])
     sio.emit('receive-changes',data['delta'], room=data['documentId'], skip_sid=sid) #dla JS zdarzenie
 

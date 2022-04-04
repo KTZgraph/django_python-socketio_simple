@@ -69,6 +69,7 @@ useEffect(() => {
     const handler = (delta) => {
       // aktualizacja danych w edytorze
       quill.updateContents(delta);
+      // quill.getContents(delta); // podobno to jest do bazy
     };
 
     // tu zmiana do odbierania danych z serwera quill.on("text-change", handler);
