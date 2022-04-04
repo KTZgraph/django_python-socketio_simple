@@ -124,7 +124,7 @@ def get_document(sid, document_id):
     document_obj = get_or_create_note(document_id)
     print("\n\n\n\n\n\n")
     print(document_obj)
-    sio.emit('load_document', data='dane z bazy' room=str(document_id))
+    sio.emit('load_document', data='dane z bazy', room=str(document_id))
 
 
 @sio.event
