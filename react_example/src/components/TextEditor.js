@@ -30,6 +30,8 @@ export default function TextEditor() {
 
     // disconnect jak już nie potrzebujemy socketa
     return () => {
+      // wyjdź z pokoju zanim się rozłączysz
+      s.emit('leave', documentId)
       s.disconnect();
     };
   }, []);

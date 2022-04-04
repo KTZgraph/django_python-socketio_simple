@@ -60,10 +60,11 @@ def join(sid, message):
 
 
 @sio.event
-def leave(sid, message):
+def leave(sid, room_name):
+    # opuszczanie dokumentu
     print('leave')
-    sio.leave_room(sid, message['room'])
-    sio.emit('my_response', {'data': 'Left room: ' + message['room']},
+    sio.leave_room(sid, room_name)
+    sio.emit('my_response', {'data': 'Left room: ' + room_name},
              room=sid)
 
 
@@ -98,7 +99,6 @@ def connect(sid, environ):
 
 @sio.event
 def disconnect(sid):
-    print('disconnect')
     print('Client disconnected')
 
 
@@ -160,3 +160,4 @@ def send_changes(sid, data):
     # odłaczanie tego co wysyłał skip_sid
 
     sio.emit('receive-changes',data['delta'], room=data['documentId'], skip_sid=sid) #dla JS zdarzenie
+
