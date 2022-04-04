@@ -38,16 +38,19 @@ export default function TextEditor() {
     // delta dane z serwera
     const handler = (delta) => {
       // aktualizacja danych w edytorze
+      console.log(delta)
       quill.updateContents(delta);
     };
 
     // tu zmiana do odbierania danych z serwera quill.on("text-change", handler);
     // 'receive-changes' zdarzenie z pythona emitowane
+    // socket.on("receive-changes", handler);
     socket.on("receive-changes", handler);
 
     return () => {
       // tu zmiana do odbierania danych z serwera quill.off("text-change", handler);
       // 'receive-changes' zdarzenie z pythona emitowane
+      // socket.off("receive-changes", handler);
       socket.off("receive-changes", handler);
     };
   }, [socket, quill]);
@@ -60,6 +63,7 @@ export default function TextEditor() {
     const handler = (delta, oldDelta, source) => {
       // source - czy user zrobil zmiany, czy quill library
       if (source !== "user") return; //gdy zmiany NIE przez usera
+      console.log('source: ', source)
 
       // wysyłanie zmian do serwera - wysyłanie wiadomosci z klienta do serwerra
       // 'send_changes' zdarzenie z pythona

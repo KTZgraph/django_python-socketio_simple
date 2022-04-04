@@ -145,4 +145,4 @@ def send_changes(sid, delta):
     # sio.emit('send_changes.emit', {'data': message}, room=sid)
     # sid nie jest potrzebny to właściwie broadcast
     # sio.emit('send_changes.emit', {'data': message})
-    sio.emit('receive-changes', delta) #dla JS zdarzenie
+    sio.emit('receive-changes',delta) #dla JS zdarzenie
