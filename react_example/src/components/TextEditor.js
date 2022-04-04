@@ -31,22 +31,31 @@ export default function TextEditor() {
     };
   }, []);
 
+  // obieranie danych z serwera
+  useEffect(() => {
+    if (socket == null || quill == null) return;
 
+    // delta dane z serwera
+    const handler = (delta) => {
+      // aktualizacja danych w edytorze
+      quill.updateContents(delta);
+    };
 
+    // tu zmiana do odbierania danych z serwera quill.on("text-change", handler);
+    // 'receive-changes' zdarzenie z pythona emitowane
+    socket.on("receive-changes", handler);
 
+    return () => {
+      // tu zmiana do odbierania danych z serwera quill.off("text-change", handler);
+      // 'receive-changes' zdarzenie z pythona emitowane
+      socket.off("receive-changes", handler);
+    };
+  }, [socket, quill]);
 
-
-
-
-
-
-
-
-  
   // detekecja zmian z Quill
   useEffect(() => {
     // na początku uruchomienia są nullami
-    if(socket == null || quill == null) return;
+    if (socket == null || quill == null) return;
 
     const handler = (delta, oldDelta, source) => {
       // source - czy user zrobil zmiany, czy quill library
@@ -66,19 +75,6 @@ export default function TextEditor() {
       quill.off("text-change", handler);
     };
   }, [socket, quill]);
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   // edytor
   const wrapperRef = useCallback((wrapper) => {
