@@ -116,15 +116,12 @@ def save_document(sid, message):
 
 @sio.event 
 def get_document(sid, document_id):
-    # wejsc do pooju
-    # print('join: ', document_id, '\n\n\n\n')
+    # 1. wejsc do pooju o id dokumentu
     sio.enter_room(sid, document_id)
-
-    # pobrać albo utowrzyć dokument
-    document_obj = get_or_create_note(document_id)
-    print("\n\n\n\n\n\n")
-    print(document_obj)
-    sio.emit('load_document', data='dane z bazy', room=str(document_id))
+    # 2. pobrać dane dokuemntu {'_id':24ZnakowyHex, 'data':'String z danymi z edytora'}
+    data = get_or_create_note(document_id)
+    #3. wysłąć na front do zdarzenia 'load_document'
+    sio.emit('load_document', data=data['data'], room=str(document_id))
 
 
 @sio.event
