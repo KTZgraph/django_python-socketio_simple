@@ -53,7 +53,7 @@ def save_note(note:dict)->pymongo.results.InsertOneResult:
     try:
         # result = collection.insert_one(note).inserted_id
         inserted_id = collection.insert_one(note).inserted_id
-        result = find_note_by_id(inserted_id)
+        result = collection.find_one({"_id": inserted_id})
 
         return result
     except pymongo.errors.DuplicateKeyError:
@@ -72,7 +72,7 @@ def get_or_create_note(note_id):
     result = collection.find_one({"_id": note_id})
 
     if not result:
-        result = save_note({'_id': note_id, 'data':'wstępne dane do bazy'})
+        result = save_note({'_id': note_id, 'data':'wstępne dane do baz3y'})
 
     return result    
 
