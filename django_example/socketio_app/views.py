@@ -122,42 +122,12 @@ def get_document(sid, document_id):
 
     # pobrać albo utowrzyć dokument
     document_obj = get_or_create_note(document_id)
+    print("\n\n\n\n\n\n")
     print(document_obj)
-
-
-    # wysąłnei do pokoju
-    # @sio.event
-    # def my_room_event(sid, message):
-    #     print('my_room_event')
-    #     sio.emit('my_response', {'data': message['data']}, room=message['room'])
-
-    sio.emit('load_document', data=document_obj, room=str(document_id))
-
-
-
-
-# socket.broadcast.to(documentId).emit("receive-changes", delta);
-@sio.event 
-def receive_changes(sid, message):
-    print('receive-changes')
-    print('receive-changes message : ',message , '********************************************************************\n')
-    sio.emit('my_response_receive-changes', {'data': message}, room=sid)
+    sio.emit('load_document', data='dane z bazy' room=str(document_id))
 
 
 @sio.event
 def send_changes(sid, data):
-    print('*'*79)
-    print('send_changes')
-    print(data['documentId'])
-    print(data['delta'])
-    print('sid  ', sid)
-    print('*'*79)
-    print('\n\n\n\n')
-    # sio.emit('send_changes.emit', {'data': message}, room=sid)
-    # sid nie jest potrzebny to właściwie broadcast
-    # sio.emit('send_changes.emit', {'data': message})
-    
-    # odłaczanie tego co wysyłał skip_sid
-
     sio.emit('receive-changes',data['delta'], room=data['documentId'], skip_sid=sid) #dla JS zdarzenie
 

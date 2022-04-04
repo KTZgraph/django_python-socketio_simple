@@ -18,19 +18,20 @@ def get_db_connector()->pymongo.database.Database:
     print(type(db))
     return db
 
-def get_notes_collection()->pymongo.collection.Collection:
+def get_notes_collection(collection_name='notes')->pymongo.collection.Collection:
     db = get_db_connector()
 
     # notes to nazwa kolekcji
     print(type(db.notes))
-    return db.notes
+    # return db.notes
+    return db[collection_name]
 
 def find_note_by_id(note_id:str)->pymongo.cursor.Cursor:
     if note_id is None:
         return
 
     collection = get_notes_collection()
-    result = collection.find({"_id": ObjectId(note_id)})
+    result = collection.find_one({"_id": ObjectId(note_id)})
     print(result)
         
     return result
@@ -48,7 +49,10 @@ def update_note(note:dict)->pymongo.results.UpdateResult:
 def save_note(note:dict)->pymongo.results.InsertOneResult:
     collection = get_notes_collection()
     try:
-        result = collection.insert_one(note)
+        # result = collection.insert_one(note).inserted_id
+        inserted_id = collection.insert_one(note).inserted_id
+        result = find_note_by_id(inserted_id)
+
         return result
     except pymongo.errors.DuplicateKeyError:
         print(f'Note with id:{note["_id"]} already exists')
@@ -56,6 +60,7 @@ def save_note(note:dict)->pymongo.results.InsertOneResult:
 def get_or_create_note(note_id):
     if note_id is None:
         return
+
     result = find_note_by_id(note_id)
     
     # jak jest w bazie to zwróć
