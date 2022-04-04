@@ -1,5 +1,10 @@
 "# django_python-socketio_simple" 
 
+### How To Build A Google Docs Clone With React, Socket.io, and MongoDB
+https://www.youtube.com/watch?v=iRaelG7v0OU
+
+
+
 -------------------------------------- DJANGO --------------------------------------
 
 # django app example
@@ -59,3 +64,7 @@ sio = socketio.Server(cors_allowed_origins='*')
 
 
 https://github.com/miguelgrinberg/python-socketio/blob/main/docs/server.rst
+
+
+npm i react-router-dom
+npm i uuid
