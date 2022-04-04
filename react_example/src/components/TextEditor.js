@@ -37,7 +37,11 @@ export default function TextEditor() {
     const editor = document.createElement("div");
     wrapper.append(editor);
 
-    new Quill(editor, { theme: "snow", modules: { toolbar: TOOLBAR_OPTIONS } });
+    const q = new Quill(editor, {
+      theme: "snow",
+      modules: { toolbar: TOOLBAR_OPTIONS },
+    });
+    setQuill(q);
   }, []);
   return <div className="container" ref={wrapperRef}></div>;
 }
