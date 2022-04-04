@@ -18,7 +18,7 @@ const TOOLBAR_OPTIONS = [
 ];
 
 export default function TextEditor() {
-  const params = useParams()
+  const {id: documentId} = useParams()
   const [socket, setSocket] = useState();
   const [quill, setQuill] = useState();
 
@@ -36,9 +36,27 @@ export default function TextEditor() {
 
 
 // zmiany po dokuemntId
-// useEffect(() => {
+useEffect(() => {
+  if(socket == null | quill == null) return
 
-// }, [socket, quill, documentId])
+// próbuję się dostać do pokoju z dokumentem id
+
+
+  // nasłuchiwanie zdarzenia z pythona tylko raz socket.once
+  // 'load_document' zdarzenie z pythona
+  socket.once('load_document', document => {
+    // dokuemnt musi zostać zwrócony z serwera
+
+    console.log('document: ', document)
+    quill.setContents(document)
+    // bo wcześniej blokuję edytor jeśli dokuemnt jest niezaładowany
+    quill.enable()
+  })
+
+  // 'get_document' zdarzenie z pythona
+  socket.emit('get_document', documentId)
+
+}, [socket, quill, documentId])
 
 
   // obieranie danych z serwera
@@ -48,7 +66,6 @@ export default function TextEditor() {
     // delta dane z serwera
     const handler = (delta) => {
       // aktualizacja danych w edytorze
-      console.log(delta)
       quill.updateContents(delta);
     };
 
@@ -74,14 +91,13 @@ export default function TextEditor() {
     const handler = (delta, oldDelta, source) => {
       // source - czy user zrobil zmiany, czy quill library
       if (source !== "user") return; //gdy zmiany NIE przez usera
-      console.log('source: ', source)
-
       // wysyłanie zmian do serwera - wysyłanie wiadomosci z klienta do serwerra
       // 'send_changes' zdarzenie z pythona
-      console.log('------------delta na serwer----------')
-      console.log(delta)
-      console.log('\n\n\n')
-      socket.emit("send_changes", delta);
+      const data = {
+        'delta': delta,
+        'documentId': documentId
+      }
+      socket.emit("send_changes", data);
     };
 
     // 'text-change' zdarzenie z dokumentacji
@@ -108,6 +124,8 @@ export default function TextEditor() {
       theme: "snow",
       modules: { toolbar: TOOLBAR_OPTIONS },
     });
+    q.disable()
+    q.setText('Nie załadowany jeszcze dokument...')
     setQuill(q);
   }, []);
   return <div className="container" ref={wrapperRef}></div>;

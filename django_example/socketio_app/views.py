@@ -108,23 +108,32 @@ def disconnect(sid):
 @sio.event
 def save_document(sid, message):
     print('save_document')
-
-    
     print('save_document message : ',message , '********************************************************************\n')
     sio.emit('my_response_save_document', {'data': message}, room=sid)
 
-
-@sio.event
-def load_document(sid, message):
-    print('load-document')
-    print('load-document message : ',message , '********************************************************************\n')
-    sio.emit('my_response_load-document', {'data': message}, room=sid)
-
 @sio.event 
-def get_document(sid, message):
-    print('get-document')
-    print('get-document message : ',message , '********************************************************************\n')
-    sio.emit('my_response_get-document', {'data': message}, room=sid)
+def get_document(sid, document_id):
+    # wejsc do pooju
+    # @sio.event
+    # def join(sid, message):
+    #     print('join')
+    #     sio.enter_room(sid, message['room'])
+    #     sio.emit('my_response', {'data': 'Entered room: ' + message['room']},
+    #             room=sid)
+
+    print('join: ', document_id, '\n\n\n\n')
+    sio.enter_room(sid, document_id)
+
+
+    # wysąłnei do pokoju
+    # @sio.event
+    # def my_room_event(sid, message):
+    #     print('my_room_event')
+    #     sio.emit('my_response', {'data': message['data']}, room=message['room'])
+
+    sio.emit('load_document', data=f'Dane pliku z serwera, {sid}, {document_id}', room=str(document_id))
+
+
 
 
 # socket.broadcast.to(documentId).emit("receive-changes", delta);
@@ -136,10 +145,11 @@ def receive_changes(sid, message):
 
 
 @sio.event
-def send_changes(sid, delta):
+def send_changes(sid, data):
     print('*'*79)
     print('send_changes')
-    print(delta)
+    print(data['documentId'])
+    print(data['delta'])
     print('sid  ', sid)
     print('*'*79)
     print('\n\n\n\n')
@@ -149,4 +159,4 @@ def send_changes(sid, delta):
     
     # odłaczanie tego co wysyłał skip_sid
 
-    sio.emit('receive-changes',delta, skip_sid=sid) #dla JS zdarzenie
+    sio.emit('receive-changes',data['delta'], room=data['documentId'], skip_sid=sid) #dla JS zdarzenie
