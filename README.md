@@ -56,3 +56,6 @@ sio = socketio.Server()
 Use
 
 sio = socketio.Server(cors_allowed_origins='*')
+
+
+https://github.com/miguelgrinberg/python-socketio/blob/main/docs/server.rst
