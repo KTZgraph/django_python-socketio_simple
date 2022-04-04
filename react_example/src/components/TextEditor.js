@@ -3,6 +3,8 @@ import Quill from "quill";
 import "quill/dist/quill.snow.css";
 import { io } from "socket.io-client";
 
+import { useParams } from "react-router-dom"; // do wyciągania ID dokumentu
+
 const TOOLBAR_OPTIONS = [
   [{ header: [1, 2, 3, 4, 5, 6, false] }],
   [{ font: [] }],
@@ -16,6 +18,7 @@ const TOOLBAR_OPTIONS = [
 ];
 
 export default function TextEditor() {
+  const params = useParams()
   const [socket, setSocket] = useState();
   const [quill, setQuill] = useState();
 
@@ -30,6 +33,13 @@ export default function TextEditor() {
       s.disconnect();
     };
   }, []);
+
+
+// zmiany po dokuemntId
+// useEffect(() => {
+
+// }, [socket, quill, documentId])
+
 
   // obieranie danych z serwera
   useEffect(() => {
@@ -55,6 +65,7 @@ export default function TextEditor() {
     };
   }, [socket, quill]);
 
+
   // detekecja zmian z Quill
   useEffect(() => {
     // na początku uruchomienia są nullami
@@ -67,6 +78,9 @@ export default function TextEditor() {
 
       // wysyłanie zmian do serwera - wysyłanie wiadomosci z klienta do serwerra
       // 'send_changes' zdarzenie z pythona
+      console.log('------------delta na serwer----------')
+      console.log(delta)
+      console.log('\n\n\n')
       socket.emit("send_changes", delta);
     };
 
@@ -79,6 +93,8 @@ export default function TextEditor() {
       quill.off("text-change", handler);
     };
   }, [socket, quill]);
+
+
 
   // edytor
   const wrapperRef = useCallback((wrapper) => {

@@ -140,9 +140,13 @@ def send_changes(sid, delta):
     print('*'*79)
     print('send_changes')
     print(delta)
+    print('sid  ', sid)
     print('*'*79)
     print('\n\n\n\n')
     # sio.emit('send_changes.emit', {'data': message}, room=sid)
     # sid nie jest potrzebny to właściwie broadcast
     # sio.emit('send_changes.emit', {'data': message})
-    sio.emit('receive-changes',delta) #dla JS zdarzenie
+    
+    # odłaczanie tego co wysyłał skip_sid
+
+    sio.emit('receive-changes',delta, skip_sid=sid) #dla JS zdarzenie
