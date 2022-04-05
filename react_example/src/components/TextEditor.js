@@ -148,7 +148,7 @@ useEffect(() => {
       modules: { toolbar: TOOLBAR_OPTIONS },
     });
     q.disable()
-    q.setText('Nie załadowany jeszcze dokument...')
+    q.setText('Loading...')
     setQuill(q);
   }, []);
   return <div className="container" ref={wrapperRef}></div>;
