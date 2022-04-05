@@ -110,10 +110,10 @@ def disconnect(sid):
 ###########################################################
 @sio.event
 def save_document(sid, data):
-    update_note(data)
-    print('update_note: ', data)
-    print('\n\n\n\n\n\n\n\n')
-    sio.emit('my_response_save_document', {'data': data['data']}, room=sid)
+    print('---------------------save data---------------------')
+    print('sid: ', sid)
+    update_note(data['documentId'], data['data'])
+    sio.emit('my_response_save_document', 'ala ma kota', room=data['documentId'] )
 
 @sio.event 
 def get_document(sid, document_id):
@@ -122,7 +122,7 @@ def get_document(sid, document_id):
     # 2. pobrać dane dokuemntu {'_id':24ZnakowyHex, 'data':'String z danymi z edytora'}
     data = get_or_create_note(document_id)
     #3. wysłąć na front do zdarzenia 'load_document'
-    sio.emit('load_document', data=data['data'], room=str(document_id))
+    sio.emit('load_document', data=data['data'], room=document_id)
 
 
 @sio.event

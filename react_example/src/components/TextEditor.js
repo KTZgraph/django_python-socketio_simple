@@ -17,6 +17,8 @@ const TOOLBAR_OPTIONS = [
   ["clean"],
 ];
 
+const SAVE_INTERVAL_MS = 2000;
+
 export default function TextEditor() {
   const {id: documentId} = useParams()
   const [socket, setSocket] = useState();
@@ -35,6 +37,24 @@ export default function TextEditor() {
       s.disconnect();
     };
   }, []);
+
+
+// aktualizacja dokumentu - zapisywanie zmian co kilka sekund
+useEffect(()=>{
+  if(socket == null | quill == null) return
+
+  const interval = setInterval(()=>{
+    //  quill.getContents() wszystkie informacje jakie mam zapisac w bazie danych
+    socket.emit('save_document', {'documentId': documentId ,'data': quill.getContents()})
+
+  }, SAVE_INTERVAL_MS)
+
+  // czysszczeni eintervala
+  return() => {
+    clearInterval(interval)
+  }
+
+}, [socket, quill])
 
 
 // zmiany po dokuemntId
